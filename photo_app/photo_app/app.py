@@ -53,6 +53,14 @@ def send_image(username, filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], username), filename)
 
 if __name__ == '__main__':
+    import shutil
+
+@app.route('/delete_user/<username>', methods=['POST'])
+def delete_user(username):
+    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
+    if os.path.exists(user_folder):
+        shutil.rmtree(user_folder)  # Xóa toàn bộ thư mục và các tệp bên trong
+    return redirect(url_for('admin'))
     import os
 from flask import redirect, url_for
 
