@@ -16,8 +16,8 @@
 </head>
 <body>
     <div class="card">
-        <!-- Chèn logo war.jpg -->
-        <img src="{{ url_for('send_root_file', filename='war.jpg') }}" alt="WAR Logo" class="logo">
+        <!-- Đường dẫn trực tiếp đến logo -->
+        <img src="/war.jpg" alt="WAR Logo" class="logo">
         
         <form action="/upload" method="POST" enctype="multipart/form-data">
             <div class="form-group">
