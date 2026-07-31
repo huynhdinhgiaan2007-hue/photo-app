@@ -8,14 +8,13 @@
         .user-section { background: white; padding: 15px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
         .user-title { font-size: 20px; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-bottom: 15px; }
         .gallery { display: flex; flex-wrap: wrap; gap: 15px; }
-        .img-card { border: 1px solid #ddd; padding: 5px; border-radius: 4px; background: #fff; text-align: center; }
+        .img-card { border: 1px solid #ddd; padding: 5px; border-radius: 4px; background: #fff; }
         .img-card img { width: 180px; height: 180px; object-fit: cover; border-radius: 4px; display: block; }
-        .img-name { font-size: 12px; color: #666; margin-top: 5px; width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .img-name { font-size: 12px; color: #666; margin-top: 5px; text-align: center; width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     </style>
 </head>
 <body>
     <h1>Trang Quản Lý Ảnh (Chủ Web)</h1>
-
     {% if not users_data %}
         <p>Chưa có ảnh nào được tải lên.</p>
     {% endif %}
@@ -28,12 +27,16 @@
                     <div class="img-card">
                         <img src="{{ url_for('send_image', username=username, filename=file) }}" alt="{{ file }}">
                         <div class="img-name">{{ file }}</div>
-                        
-                        <form action="{{ url_for('delete_file', username=username, filename=file) }}" method="POST" style="margin-top: 5px;">
-                            <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')" style="background-color: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
-                                Xóa ảnh
-                            </button>
-                        </form>
+<div class="img-card">
+                <img src="{{ url_for('send_image', username=username, filename=file) }}" alt="{{ file }}">
+                <div class="img-name">{{ file }}</div>
+                
+                <form action="{{ url_for('delete_file', folder_name=username, filename=file) }}" method="POST" style="margin-top: 5px; text-align: center;">
+                    <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')" style="background-color: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                        Xóa
+                    </button>
+                </form>
+            </div>
                     </div>
                 {% endfor %}
             </div>
