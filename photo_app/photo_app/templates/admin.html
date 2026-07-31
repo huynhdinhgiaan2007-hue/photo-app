@@ -27,6 +27,16 @@
                     <div class="img-card">
                         <img src="{{ url_for('send_image', username=username, filename=file) }}" alt="{{ file }}">
                         <div class="img-name">{{ file }}</div>
+                        <div class="img-card">
+                <img src="{{ url_for('send_image', username=username, filename=file) }}" alt="{{ file }}">
+                <div class="img-name">{{ file }}</div>
+                
+                <form action="{{ url_for('delete_file', folder_name=username, filename=file) }}" method="POST" style="margin-top: 5px; text-align: center;">
+                    <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')" style="background-color: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                        Xóa
+                    </button>
+                </form>
+            </div>
                     </div>
                 {% endfor %}
             </div>
