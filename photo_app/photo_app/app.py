@@ -70,8 +70,5 @@ def delete_file(username, filename):
         print(f"Error deleting file: {e}")
     return redirect(url_for('admin'))
 
-@app.route('/<filename>')
-def send_root_file(filename):
-    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), filename)
     if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
