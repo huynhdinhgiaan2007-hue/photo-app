@@ -1,74 +1,65 @@
 import os
 import shutil
-from flask import Flask, render_template, request, send_from_directory
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+# Cấu hình thư mục uploads
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    message = ""
-    if request.method == 'POST':
-        user_name = request.form.get('username', '').strip()
-        file = request.files.get('file')
+    return render_template('index.html')
 
-        if not user_name:
-            message = "Vui lòng nhập tên của bạn!"
-        elif not file or file.filename == '':
-            message = "Vui lòng chọn một bức ảnh!"
-        elif file and allowed_file(file.filename):
-            safe_user_folder = secure_filename(user_name) or "anonymous"
-            user_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_user_folder)
-            os.makedirs(user_path, exist_ok=True)
-
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(user_path, filename))
-            message = f"Tải ảnh thành công cho tài khoản '{user_name}'!"
-        else:
-            message = "Định dạng file không hợp lệ!"
-
-    return render_template('index.html', message=message)
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    username = request.form.get('username', '').strip()
+    if not username:
+        username = 'Anonymous'
+    
+    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
+    if not os.path.exists(user_folder):
+        os.makedirs(user_folder)
+        
+    files = request.files.getlist('files')
+    for file in files:
+        if file and file.filename != '':
+            file.save(os.path.join(user_folder, file.filename))
+            
+    return redirect(url_for('index'))
 
 @app.route('/admin')
 def admin():
     users_data = {}
-    if os.path.exists(UPLOAD_FOLDER):
-        for user_folder in os.listdir(UPLOAD_FOLDER):
-            folder_path = os.path.join(UPLOAD_FOLDER, user_folder)
-            if os.path.isdir(folder_path):
-                files = os.listdir(folder_path)
-                users_data[user_folder] = files
+    if os.path.exists(app.config['UPLOAD_FOLDER']):
+        for username in os.listdir(app.config['UPLOAD_FOLDER']):
+            user_path = os.path.join(app.config['UPLOAD_FOLDER'], username)
+            if os.path.isdir(user_path):
+                files = [f for f in os.listdir(user_path) if os.path.isfile(os.path.join(user_path, f))]
+                users_data[username] = files
     return render_template('admin.html', users_data=users_data)
 
 @app.route('/uploads/<username>/<filename>')
 def send_image(username, filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], username), filename)
 
-if __name__ == '__main__':
-    import shutil
+@app.route('/delete/<username>/<filename>', methods=['POST'])
+def delete_file(username, filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], username, filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    return redirect(url_for('admin'))
 
 @app.route('/delete_user/<username>', methods=['POST'])
 def delete_user(username):
     user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
     if os.path.exists(user_folder):
-        shutil.rmtree(user_folder)  # Xóa toàn bộ thư mục và các tệp bên trong
+        shutil.rmtree(user_folder)
     return redirect(url_for('admin'))
-    import os
-from flask import redirect, url_for
 
-@app.route('/delete/<folder_name>/<filename>', methods=['POST'])
-def delete_file(folder_name, filename):
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], folder_name, filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
-    return redirect(url_for('admin'))
-    app.run(debug=True, port=5000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
