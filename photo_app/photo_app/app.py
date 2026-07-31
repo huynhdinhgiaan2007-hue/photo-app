@@ -3,14 +3,12 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 
 app = Flask(__name__)
 
-# Cấu hình thư mục uploads
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-# Trang tải ảnh lên (Hỗ trợ cả GET và POST để chống lỗi 405)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -37,7 +35,6 @@ def process_upload():
             
     return redirect(url_for('index'))
 
-# Trang quản lý dành cho chủ web
 @app.route('/admin')
 def admin():
     users_data = {}
@@ -54,12 +51,15 @@ def admin():
         
     return render_template('admin.html', users_data=users_data)
 
-# Route hiển thị hình ảnh
+# Route tải ảnh logo war.jpg ở thư mục gốc
+@app.route('/war.jpg')
+def serve_logo():
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'war.jpg')
+
 @app.route('/uploads/<username>/<filename>')
 def send_image(username, filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], username), filename)
 
-# Route xóa từng ảnh
 @app.route('/delete/<username>/<filename>', methods=['POST'])
 def delete_file(username, filename):
     try:
@@ -70,8 +70,5 @@ def delete_file(username, filename):
         print(f"Error deleting file: {e}")
     return redirect(url_for('admin'))
 
-   @app.route('/<filename>')
-def send_root_file(filename):
-    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), filename)
-    if __name__ == '__main__':
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
