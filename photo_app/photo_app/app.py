@@ -53,4 +53,13 @@ def send_image(username, filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], username), filename)
 
 if __name__ == '__main__':
+    import os
+from flask import redirect, url_for
+
+@app.route('/delete/<folder_name>/<filename>', methods=['POST'])
+def delete_file(folder_name, filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], folder_name, filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    return redirect(url_for('admin'))
     app.run(debug=True, port=5000)
