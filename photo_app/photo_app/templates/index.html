@@ -2,20 +2,23 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Tải Ảnh Lên</title>
+    <title>Tải Ảnh Lên - WAR</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f6f9; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 350px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="file"] { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #0056b3; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #121212; color: #fff; margin: 0; }
+        .card { background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 350px; text-align: center; }
+        .logo { width: 100%; max-width: 250px; height: auto; border-radius: 8px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #ccc; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #444; background: #2a2a2a; color: #fff; }
+        button { width: 100%; padding: 12px; background: #e50914; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #b80710; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>Tải Ảnh Lên</h2>
+        <!-- Chèn logo war.jpg -->
+        <img src="{{ url_for('send_root_file', filename='war.jpg') }}" alt="WAR Logo" class="logo">
+        
         <form action="/upload" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Họ và Tên:</label>
