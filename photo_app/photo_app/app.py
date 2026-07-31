@@ -1,10 +1,9 @@
 import os
-import shutil
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
 app = Flask(__name__)
 
-# Cấu hình thư mục uploads
+# Cấu hình thư mục lưu ảnh
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -40,7 +39,8 @@ def admin():
             user_path = os.path.join(app.config['UPLOAD_FOLDER'], username)
             if os.path.isdir(user_path):
                 files = [f for f in os.listdir(user_path) if os.path.isfile(os.path.join(user_path, f))]
-                users_data[username] = files
+                if files:  # Chỉ hiển thị người đăng nếu có ít nhất 1 ảnh
+                    users_data[username] = files
     return render_template('admin.html', users_data=users_data)
 
 @app.route('/uploads/<username>/<filename>')
@@ -52,13 +52,6 @@ def delete_file(username, filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], username, filename)
     if os.path.exists(file_path):
         os.remove(file_path)
-    return redirect(url_for('admin'))
-
-@app.route('/delete_user/<username>', methods=['POST'])
-def delete_user(username):
-    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
-    if os.path.exists(user_folder):
-        shutil.rmtree(user_folder)
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
