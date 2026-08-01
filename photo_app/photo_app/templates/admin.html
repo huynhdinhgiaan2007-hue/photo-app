@@ -2,42 +2,43 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản Lý Ảnh Đã Tải Lên</title>
+    <title>Trang Quản Lý Admin - WAR</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f8f9fa; }
-        .user-section { background: white; padding: 15px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
-        .user-title { font-size: 20px; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-bottom: 15px; }
-        .gallery { display: flex; flex-wrap: wrap; gap: 15px; }
-        .img-card { border: 1px solid #ddd; padding: 5px; border-radius: 4px; background: #fff; text-align: center; }
-        .img-card img { width: 180px; height: 180px; object-fit: cover; border-radius: 4px; display: block; }
-        .img-name { font-size: 12px; color: #666; margin-top: 5px; width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; }
+        h1 { text-align: center; color: #e50914; }
+        .user-block { background: #1e1e1e; padding: 15px; margin-bottom: 20px; border-radius: 8px; }
+        .user-name { font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #ffeb3b; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .grid { display: flex; flex-wrap: wrap; gap: 15px; }
+        .img-card { background: #2a2a2a; padding: 10px; border-radius: 6px; text-align: center; width: 160px; }
+        .img-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; }
+        .btn-delete { background: #e50914; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; }
+        .btn-delete:hover { background: #b80710; }
     </style>
 </head>
 <body>
-    <h1>Trang Quản Lý Ảnh (Chủ Web)</h1>
-
-    {% if not users_data %}
-        <p>Chưa có ảnh nào được tải lên.</p>
-    {% else %}
-        {% for username, files in users_data.items() %}
-            <div class="user-section">
-                <div class="user-title">Người đăng: <strong>{{ username }}</strong> ({{ files|length }} ảnh)</div>
-                <div class="gallery">
-                    {% for file in files %}
+    <h1>DANH SÁCH TÀI KHOẢN VÀ ẢNH ĐÃ TẢI LÊN</h1>
+    
+    {% if users_data %}
+        {% for username, images in users_data.items() %}
+            <div class="user-block">
+                <div class="user-name">👤 Tài khoản: {{ username }} ({{ images|length }} ảnh)</div>
+                <div class="grid">
+                    {% for img in images %}
                         <div class="img-card">
-                            <img src="{{ url_for('send_image', username=username, filename=file) }}" alt="{{ file }}">
-                            <div class="img-name">{{ file }}</div>
-                            
-                            <form action="{{ url_for('delete_file', username=username, filename=file) }}" method="POST" style="margin-top: 5px;">
-                                <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')" style="background-color: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
-                                    Xóa ảnh
-                                </button>
+                            <a href="{{ img.url }}" target="_blank">
+                                <img src="{{ img.url }}" alt="User Photo">
+                            </a>
+                            <form action="/delete" method="POST">
+                                <input type="hidden" name="public_id" value="{{ img.public_id }}">
+                                <button type="submit" class="btn-delete" onclick="return confirm('Bạn có chắc muốn xóa ảnh này?')">Xóa Ảnh</button>
                             </form>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         {% endfor %}
+    {% else %}
+        <p style="text-align: center; color: #888;">Chưa có dữ liệu nào được tải lên.</p>
     {% endif %}
 </body>
 </html>
