@@ -4,15 +4,16 @@ import cloudinary.uploader
 import cloudinary.api
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 
-# Cấu hình Cloudinary
+# Cấu hình Cloudinary chuẩn
 cloudinary.config( 
   cloud_name = "xz9idpxr", 
   api_key = "488942164463563", 
-  api_secret = "DÁN_API_SECRET_CỦA_BẠN_VÀO_ĐÂY",
+  api_secret = "s43bwIwBiEvq1X9tsLecHl4VsRc",
   secure = True
 )
 
 app = Flask(__name__)
+# Cho phép tải file dung lượng lớn (1GB)
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  
 
 @app.route('/', methods=['GET', 'POST'])
@@ -33,8 +34,8 @@ def process_upload():
     files = request.files.getlist('files') or request.files.getlist('file')
     for file in files:
         if file and file.filename != '':
-            # Tạo public_id trực tiếp chứa folder name
             file_name_only = os.path.splitext(file.filename)[0]
+            # Tạo đường dẫn thư mục trực tiếp war_app/username/filename
             custom_id = f"war_app/{username}/{file_name_only}"
             
             cloudinary.uploader.upload(
@@ -49,7 +50,7 @@ def process_upload():
 def admin():
     users_data = {}
     try:
-        # Lấy toàn bộ danh sách ảnh từ Cloudinary
+        # Lấy danh sách toàn bộ ảnh đã upload lên Cloudinary
         result = cloudinary.api.resources(
             type="upload",
             prefix="war_app/",
