@@ -3,6 +3,9 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 
 app = Flask(__name__)
 
+# Cấu hình dung lượng tối đa cho 1 lần tải lên: 1 GB (1024 MB)
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  
+
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -28,6 +31,7 @@ def process_upload():
     if not os.path.exists(user_folder):
         os.makedirs(user_folder)
         
+    # Nhận toàn bộ danh sách file được tải lên
     files = request.files.getlist('files') or request.files.getlist('file')
     for file in files:
         if file and file.filename != '':
@@ -47,11 +51,10 @@ def admin():
                     if files:
                         users_data[username] = files
     except Exception as e:
-        print(f"Error in admin: {e}")
+        print(f"Lỗi trong admin: {e}")
         
     return render_template('admin.html', users_data=users_data)
 
-# Route tải ảnh logo war.jpg ở thư mục gốc
 @app.route('/war.jpg')
 def serve_logo():
     return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'war.jpg')
@@ -67,7 +70,7 @@ def delete_file(username, filename):
         if os.path.exists(file_path):
             os.remove(file_path)
     except Exception as e:
-        print(f"Error deleting file: {e}")
+        print(f"Lỗi xóa file: {e}")
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
